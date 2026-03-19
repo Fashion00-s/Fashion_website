@@ -257,20 +257,69 @@
 
   async function submitToGoogleScript(formData) {
     try {
+      console.log("Sending data:", formData); // Debug: see what we're sending
+      
       const response = await fetch("https://script.google.com/macros/s/AKfycbyyiF2paVNaWhTXoxoXKRNxtn0yC5u2lh6Y3FEhHbVLzr6DpJxrnCnIIO77mstcD4DAkA/exec", {
         method: "POST",
+        mode: "no-cors", // Try with no-cors mode first
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
         body: new URLSearchParams(formData)
       });
 
-      const result = await response.text();
-      console.log("Google Script response:", result); // For debugging
+      // With no-cors, we can't read the response
+      console.log("Response status:", response.status);
+      console.log("Response type:", response.type);
       
-      // Check if the response indicates success
-      // Adjust this condition based on what your script returns
-      return result === "success" || result.includes("success");
+      // Since we can't read the response with no-cors, assume success
+      return true;
 
     } catch (error) {
       console.error("Submission error:", error);
+      return false;
+    }
+  }
+
+  // Alternative submission method if the above doesn't work
+  async function submitToGoogleScriptAlternative(formData) {
+    try {
+      // Create a hidden iframe to submit the form
+      return new Promise((resolve) => {
+        const iframe = document.createElement('iframe');
+        iframe.name = 'hiddenIframe';
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = "https://script.google.com/macros/s/AKfycbyyiF2paVNaWhTXoxoXKRNxtn0yC5u2lh6Y3FEhHbVLzr6DpJxrnCnIIO77mstcD4DAkA/exec";
+        form.target = 'hiddenIframe';
+
+        // Add form fields
+        Object.keys(formData).forEach(key => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = formData[key];
+          form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        
+        // Handle iframe load event
+        iframe.onload = function() {
+          setTimeout(() => {
+            document.body.removeChild(form);
+            document.body.removeChild(iframe);
+            resolve(true);
+          }, 1000);
+        };
+
+        form.submit();
+      });
+    } catch (error) {
+      console.error("Alternative submission error:", error);
       return false;
     }
   }
@@ -300,8 +349,14 @@
     submitButton.disabled = true;
 
     try {
-      // Submit to Google Script
-      const success = await submitToGoogleScript(formData);
+      // Try primary submission method
+      let success = await submitToGoogleScript(formData);
+      
+      // If primary fails, try alternative
+      if (!success) {
+        console.log("Trying alternative submission method...");
+        success = await submitToGoogleScriptAlternative(formData);
+      }
       
       if (success) {
         // Show success message
