@@ -1,0 +1,466 @@
+/* my-website/style.css */
+:root {
+  --bg: #eaf3ff;
+  --surface: #f3f8ff;
+  --surface-soft: #dbeafe;
+  --text: #1e3a8a;
+  --muted: #475569;
+  --heading: #1d4ed8;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --accent: #f97316;
+  --whatsapp: #16a34a;
+  --whatsapp-hover: #15803d;
+  --border: #bfdbfe;
+  --ring: rgba(37, 99, 235, 0.22);
+  --radius: 14px;
+  --radius-lg: 18px;
+  --shadow-sm: 0 6px 16px rgba(30, 64, 175, 0.12);
+  --shadow-md: 0 12px 30px rgba(30, 64, 175, 0.16);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Cairo", "Tajawal", "Inter", "Segoe UI", "Tahoma", "Arial", sans-serif;
+  line-height: 1.65;
+  font-weight: 600;
+}
+
+img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.container {
+  width: min(1120px, 92%);
+  margin-inline: auto;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: linear-gradient(90deg, #1d4ed8 0%, #2563eb 60%, #3b82f6 100%);
+  border-bottom: 1px solid #1e40af;
+  box-shadow: 0 8px 22px rgba(29, 78, 216, 0.35);
+}
+
+.topbar-inner {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.free-delivery {
+  background: #ecfdf3;
+  color: #027a48;
+  border: 1px solid #abefc6;
+}
+
+.lang-toggle {
+  border: 1px solid #dbeafe;
+  background: #ffffff;
+  color: #1d4ed8;
+  border-radius: 999px;
+  padding: 9px 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+main {
+  padding-top: 10px;
+}
+
+section {
+  padding: 20px 0;
+}
+
+.hero {
+  padding-top: 10px;
+}
+
+.hero-image-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 8px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 14px;
+}
+
+.hero-image {
+  min-height: 290px;
+  max-height: 450px;
+  border-radius: 12px;
+}
+
+.hero-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+.product-title {
+  margin: 0 0 8px;
+  font-size: 1.7rem;
+  line-height: 1.35;
+  color: #0b3ea8;
+  font-weight: 900;
+  font-family: "Cairo", "Tajawal", "Poppins", "Segoe UI", sans-serif;
+}
+
+.price-block {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin: 6px 0 4px;
+}
+
+.current-price {
+  font-size: clamp(2.4rem, 9vw, 3.2rem);
+  line-height: 0.95;
+  color: var(--accent);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.old-price {
+  font-size: 1rem;
+  color: var(--muted);
+  text-decoration: line-through;
+  font-weight: 700;
+}
+
+.offer-urgency {
+  margin: 8px 0 12px;
+  color: #b42318;
+  font-weight: 800;
+}
+
+.countdown-card {
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+  border-radius: 13px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.countdown-title {
+  margin: 0 0 8px;
+  font-weight: 800;
+  color: #991b1b;
+}
+
+.countdown {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.time-box {
+  background: var(--surface);
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  text-align: center;
+  padding: 9px 4px;
+}
+
+.time-box span {
+  display: block;
+  color: #991b1b;
+  font-weight: 900;
+  font-size: 1.32rem;
+  line-height: 1.1;
+}
+
+.time-box small {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+h2 {
+  margin: 0 0 12px;
+  font-size: 1.18rem;
+  color: var(--heading);
+  font-weight: 800;
+}
+
+.benefits-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.benefit-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 13px;
+  box-shadow: var(--shadow-sm);
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.gallery-grid img {
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+}
+
+.description p {
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  color: #334155;
+  box-shadow: var(--shadow-sm);
+}
+
+.order {
+  padding-bottom: 92px;
+}
+
+form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow-md);
+}
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+label {
+  display: inline-block;
+  margin-bottom: 6px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+input,
+textarea {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  padding: 13px 12px;
+  font-size: 1rem;
+  background: #fff;
+  outline: none;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #111827;
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+.error {
+  display: block;
+  min-height: 18px;
+  margin-top: 4px;
+  color: #b42318;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.order-success-box {
+  display: none;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #86efac;
+  background: #dcfce7;
+  color: #166534;
+  font-weight: 700;
+}
+
+.order-success-box.show {
+  display: block;
+}
+
+.form-actions,
+.hero-cta,
+.mobile-sticky-bar {
+  display: flex;
+  gap: 10px;
+}
+
+.form-actions {
+  flex-direction: column;
+}
+
+.price-total-box {
+  background: #e0ecff;
+  border: 1px solid #93c5fd;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin: 6px 0 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #1e3a8a;
+  font-weight: 800;
+}
+
+.price-total-box strong {
+  color: #ea580c;
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+
+.btn {
+  appearance: none;
+  border: 0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  min-height: 52px;
+  font-size: 1rem;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  flex: 1;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.16);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-whatsapp {
+  background: var(--whatsapp);
+  color: #fff;
+}
+
+.btn-whatsapp:hover {
+  background: var(--whatsapp-hover);
+}
+
+.desktop-cta {
+  display: none;
+}
+
+.footer {
+  margin-top: 10px;
+  border-top: 1px solid var(--border);
+  padding: 18px 0 96px;
+  color: var(--muted);
+  text-align: center;
+  background: transparent;
+}
+
+.mobile-sticky-bar {
+  position: fixed;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 40;
+  background: rgba(255, 255, 255, 0.98);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -8px 24px rgba(2, 6, 23, 0.1);
+  padding: 10px;
+}
+
+html[lang="ar"] body {
+  direction: rtl;
+  text-align: right;
+}
+
+html[lang="ar"] .topbar-copy,
+html[lang="ar"] .hero-intro,
+html[lang="ar"] .form-head,
+html[lang="ar"] .story-text,
+html[lang="ar"] .benefits,
+html[lang="ar"] .final-cta,
+html[lang="ar"] label,
+html[lang="ar"] .price-total-box {
+  text-align: right;
+}
+
+/* Desktop */
+@media (min-width: 768px) {
+  html[lang="fr"] body {
+    direction: ltr;
+    text-align: left;
+  }
+
+  html[lang="ar"] body {
+    direction: rtl;
+    text-align: right;
+  }
+
+  section {
+    padding: 26px 0;
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  .hero-image-wrap,
+  .hero-content {
+    margin: 0;
+  }
+
+  .desktop-cta {
+    display: flex;
+    margin-top: 4px;
+  }
+
+  .benefits-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .order {
+    padding-bottom: 18px;
+  }
+
+  .mobile-sticky-bar {
+    display: none;
+  }
+
+  .footer {
+    padding-bottom: 24px;
+  }
+}
