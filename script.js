@@ -113,7 +113,6 @@
 
   let currentLang = "ar";
   const endTime = Date.now() + 4 * 24 * 60 * 60 * 1000;
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyyiF2paVNaWhTXoxoXKRNxtn0yC5u2lh6Y3FEhHbVLzr6DpJxrnCnIIO77mstcD4DAkA/exec";
 
   const langToggle = document.getElementById("langToggle");
   const form = document.getElementById("orderForm");
@@ -256,22 +255,25 @@
     }
   }
 
-async function submitToGoogleScript(formData) {
-  try {
-    const response = await fetch("https://script.google.com/macros/s/AKfycbyyiF2paVNaWhTXoxoXKRNxtn0yC5u2lh6Y3FEhHbVLzr6DpJxrnCnIIO77mstcD4DAkA/exec", {
-      method: "POST",
-      body: new URLSearchParams(formData)
-    });
+  async function submitToGoogleScript(formData) {
+    try {
+      const response = await fetch("https://script.google.com/macros/s/AKfycbyyiF2paVNaWhTXoxoXKRNxtn0yC5u2lh6Y3FEhHbVLzr6DpJxrnCnIIO77mstcD4DAkA/exec", {
+        method: "POST",
+        body: new URLSearchParams(formData)
+      });
 
-    const result = await response.text();
+      const result = await response.text();
+      console.log("Google Script response:", result); // For debugging
+      
+      // Check if the response indicates success
+      // Adjust this condition based on what your script returns
+      return result === "success" || result.includes("success");
 
-    return result === "success";
-
-  } catch (error) {
-    console.error("Submission error:", error);
-    return false;
+    } catch (error) {
+      console.error("Submission error:", error);
+      return false;
+    }
   }
-}
 
   // Main form submission handler
   form.addEventListener("submit", async (e) => {
@@ -288,12 +290,10 @@ async function submitToGoogleScript(formData) {
       name: nameInput.value.trim(),
       phone: phoneInput.value.trim(),
       address: addressInput.value.trim(),
-      quantity: quantityInput.value.trim(),
-      language: currentLang,
-      timestamp: new Date().toISOString()
+      quantity: quantityInput.value.trim()
     };
 
-    // Show loading state (optional)
+    // Show loading state
     const submitButton = form.querySelector('button[type="submit"]');
     const originalButtonText = submitButton.textContent;
     submitButton.textContent = currentLang === "ar" ? "جاري الإرسال..." : "Envoi en cours...";
@@ -301,9 +301,9 @@ async function submitToGoogleScript(formData) {
 
     try {
       // Submit to Google Script
-      const result = await submitToGoogleScript(formData);
+      const success = await submitToGoogleScript(formData);
       
-      if (result.success) {
+      if (success) {
         // Show success message
         showSuccessMessage(translations[currentLang].submitSuccess);
         
@@ -311,9 +311,6 @@ async function submitToGoogleScript(formData) {
         form.reset();
         clearErrors();
         updateTotalPrice();
-        
-        // Optional: Show additional alert (can be removed if you prefer only the success box)
-        // alert(translations[currentLang].submitSuccess);
       } else {
         // Show error message
         alert(translations[currentLang].submitError);
