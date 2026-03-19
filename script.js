@@ -260,10 +260,10 @@
     try {
       const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
-        mode: "no-cors", // This is often needed for Google Apps Script
-        headers: {
-          "Content-Type": "application/json",
-        },
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+  method: "POST",
+  body: new URLSearchParams(formData)
+});
         body: JSON.stringify(formData)
       });
       
