@@ -256,26 +256,22 @@
     }
   }
 
-  async function submitToGoogleScript(formData) {
-    try {
-      const response = await fetch("https://script.google.com/macros/s/AKfycbyyiF2paVNaWhTXoxoXKRNxtn0yC5u2lh6Y3FEhHbVLzr6DpJxrnCnIIO77mstcD4DAkA/exec", {
-        method: "POST",
-        const response = await fetch("https://script.google.com/macros/s/AKfycbyyiF2paVNaWhTXoxoXKRNxtn0yC5u2lh6Y3FEhHbVLzr6DpJxrnCnIIO77mstcD4DAkA/exec", {
-  method: "POST",
-  body: new URLSearchParams(formData)
-});
-        body: JSON.stringify(formData)
-      });
-      
-      // With no-cors mode, we can't read the response
-      // So we assume it was successful
-      return { success: true };
-      
-    } catch (err) {
-      console.error("Submission error:", err);
-      return { success: false, error: err };
-    }
+async function submitToGoogleScript(formData) {
+  try {
+    const response = await fetch("https://script.google.com/macros/s/AKfycbyyiF2paVNaWhTXoxoXKRNxtn0yC5u2lh6Y3FEhHbVLzr6DpJxrnCnIIO77mstcD4DAkA/exec", {
+      method: "POST",
+      body: new URLSearchParams(formData)
+    });
+
+    const result = await response.text();
+
+    return result === "success";
+
+  } catch (error) {
+    console.error("Submission error:", error);
+    return false;
   }
+}
 
   // Main form submission handler
   form.addEventListener("submit", async (e) => {
