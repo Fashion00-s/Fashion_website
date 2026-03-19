@@ -110,50 +110,52 @@
       submitError: "Une erreur s'est produite, veuillez réessayer."
     }
   };
-
+ 
+  const SHEET_URL = "https://script.google.com/macros/s/AKfycbyyiF2paVNaWhTXoxoXKRNxtn0yC5u2lh6Y3FEhHbVLzr6DpJxrnCnIIO77mstcD4DAkA/exec";
+ 
   let currentLang = "ar";
   const endTime = Date.now() + 4 * 24 * 60 * 60 * 1000;
-
+ 
   const langToggle = document.getElementById("langToggle");
   const form = document.getElementById("orderForm");
   const orderNowSticky = document.getElementById("orderNowSticky");
   const orderNowBottom = document.getElementById("orderNowBottom");
   const orderSection = document.getElementById("orderSection");
-
+ 
   const nameInput = document.getElementById("name");
   const phoneInput = document.getElementById("phone");
   const addressInput = document.getElementById("address");
   const quantityInput = document.getElementById("quantity");
   const totalPriceEl = document.getElementById("totalPrice");
-
+ 
   const nameError = document.getElementById("nameError");
   const phoneError = document.getElementById("phoneError");
   const addressError = document.getElementById("addressError");
   const quantityError = document.getElementById("quantityError");
   const orderSuccessBox = document.getElementById("orderSuccessBox");
-
+ 
   const daysEl = document.getElementById("days");
   const hoursEl = document.getElementById("hours");
   const minutesEl = document.getElementById("minutes");
   const secondsEl = document.getElementById("seconds");
-
+ 
   const i18nElements = document.querySelectorAll("[data-i18n]");
-
+ 
   function setLanguage(lang) {
     currentLang = lang;
     const dict = translations[lang];
-
+ 
     document.documentElement.lang = lang === "ar" ? "ar" : "fr";
     document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
     document.title = dict.pageTitle;
-
+ 
     i18nElements.forEach((el) => {
       const key = el.getAttribute("data-i18n");
       if (dict[key]) {
         el.textContent = dict[key];
       }
     });
-
+ 
     langToggle.textContent = lang === "ar" ? "Français" : "العربية";
     if (orderSuccessBox && orderSuccessBox.classList.contains("show")) {
       orderSuccessBox.textContent = dict.successMsg;
@@ -161,49 +163,49 @@
     clearErrors();
     updateTotalPrice();
   }
-
+ 
   function updateTotalPrice() {
     const qty = Math.max(1, parseInt(quantityInput?.value || "1", 10) || 1);
     if (quantityInput) quantityInput.value = qty;
     if (totalPriceEl) totalPriceEl.textContent = `${qty * 149} DH`;
   }
-
+ 
   function clearErrors() {
     nameError.textContent = "";
     phoneError.textContent = "";
     addressError.textContent = "";
     if (quantityError) quantityError.textContent = "";
   }
-
+ 
   function hideSuccessMessage() {
     if (orderSuccessBox) {
       orderSuccessBox.textContent = "";
       orderSuccessBox.classList.remove("show");
     }
   }
-
+ 
   function showSuccessMessage(message) {
     if (orderSuccessBox) {
       orderSuccessBox.textContent = message || translations[currentLang].successMsg;
       orderSuccessBox.classList.add("show");
     }
   }
-
+ 
   function validateForm() {
     const dict = translations[currentLang];
     clearErrors();
     let isValid = true;
-
+ 
     const nameVal = nameInput.value.trim();
     const phoneVal = phoneInput.value.trim();
     const addressVal = addressInput.value.trim();
     const quantityVal = parseInt(quantityInput?.value || "0", 10);
-
+ 
     if (!nameVal) {
       nameError.textContent = dict.errors.nameRequired;
       isValid = false;
     }
-
+ 
     if (!phoneVal) {
       phoneError.textContent = dict.errors.phoneRequired;
       isValid = false;
@@ -211,24 +213,24 @@
       phoneError.textContent = dict.errors.phoneInvalid;
       isValid = false;
     }
-
+ 
     if (!addressVal) {
       addressError.textContent = dict.errors.addressRequired;
       isValid = false;
     }
-
+ 
     if (!quantityVal || quantityVal < 1) {
       if (quantityError) quantityError.textContent = dict.errors.quantityRequired;
       isValid = false;
     }
-
+ 
     return isValid;
   }
-
+ 
   function updateCountdown() {
     const now = Date.now();
     const diff = endTime - now;
-
+ 
     if (diff <= 0) {
       daysEl.textContent = "00";
       hoursEl.textContent = "00";
@@ -236,169 +238,97 @@
       secondsEl.textContent = "00";
       return;
     }
-
+ 
     const totalSeconds = Math.floor(diff / 1000);
     const d = Math.floor(totalSeconds / (24 * 3600));
     const h = Math.floor((totalSeconds % (24 * 3600)) / 3600);
     const m = Math.floor((totalSeconds % 3600) / 60);
     const s = totalSeconds % 60;
-
+ 
     daysEl.textContent = String(d).padStart(2, "0");
     hoursEl.textContent = String(h).padStart(2, "0");
     minutesEl.textContent = String(m).padStart(2, "0");
     secondsEl.textContent = String(s).padStart(2, "0");
   }
-
+ 
   function scrollToOrder() {
     if (orderSection) {
       orderSection.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }
-
-  async function submitToGoogleScript(formData) {
+ 
+  // Submit data to Google Sheets via GET request (most reliable with no-cors)
+  async function submitToGoogleSheet(formData) {
     try {
-      console.log("Sending data:", formData); // Debug: see what we're sending
-      
-      const response = await fetch("https://script.google.com/macros/s/AKfycbyyiF2paVNaWhTXoxoXKRNxtn0yC5u2lh6Y3FEhHbVLzr6DpJxrnCnIIO77mstcD4DAkA/exec", {
-        method: "POST",
-        mode: "no-cors", // Try with no-cors mode first
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams(formData)
+      const params = new URLSearchParams(formData).toString();
+      await fetch(SHEET_URL + "?" + params, {
+        method: "GET",
+        mode: "no-cors"
       });
-
-      // With no-cors, we can't read the response
-      console.log("Response status:", response.status);
-      console.log("Response type:", response.type);
-      
-      // Since we can't read the response with no-cors, assume success
+      // With no-cors we can't read the response — but if no error is thrown, it went through
       return true;
-
     } catch (error) {
       console.error("Submission error:", error);
       return false;
     }
   }
-
-  // Alternative submission method if the above doesn't work
-  async function submitToGoogleScriptAlternative(formData) {
-    try {
-      // Create a hidden iframe to submit the form
-      return new Promise((resolve) => {
-        const iframe = document.createElement('iframe');
-        iframe.name = 'hiddenIframe';
-        iframe.style.display = 'none';
-        document.body.appendChild(iframe);
-
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = "https://script.google.com/macros/s/AKfycbyyiF2paVNaWhTXoxoXKRNxtn0yC5u2lh6Y3FEhHbVLzr6DpJxrnCnIIO77mstcD4DAkA/exec";
-        form.target = 'hiddenIframe';
-
-        // Add form fields
-        Object.keys(formData).forEach(key => {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = key;
-          input.value = formData[key];
-          form.appendChild(input);
-        });
-
-        document.body.appendChild(form);
-        
-        // Handle iframe load event
-        iframe.onload = function() {
-          setTimeout(() => {
-            document.body.removeChild(form);
-            document.body.removeChild(iframe);
-            resolve(true);
-          }, 1000);
-        };
-
-        form.submit();
-      });
-    } catch (error) {
-      console.error("Alternative submission error:", error);
-      return false;
-    }
-  }
-
+ 
   // Main form submission handler
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     hideSuccessMessage();
-    
-    // Validate form first
-    if (!validateForm()) {
-      return;
-    }
-
-    // Prepare form data
+ 
+    if (!validateForm()) return;
+ 
     const formData = {
-      name: nameInput.value.trim(),
-      phone: phoneInput.value.trim(),
-      address: addressInput.value.trim(),
+      name:     nameInput.value.trim(),
+      phone:    phoneInput.value.trim(),
+      address:  addressInput.value.trim(),
       quantity: quantityInput.value.trim()
     };
-
-    // Show loading state
+ 
     const submitButton = form.querySelector('button[type="submit"]');
     const originalButtonText = submitButton.textContent;
     submitButton.textContent = currentLang === "ar" ? "جاري الإرسال..." : "Envoi en cours...";
     submitButton.disabled = true;
-
+ 
     try {
-      // Try primary submission method
-      let success = await submitToGoogleScript(formData);
-      
-      // If primary fails, try alternative
-      if (!success) {
-        console.log("Trying alternative submission method...");
-        success = await submitToGoogleScriptAlternative(formData);
-      }
-      
+      const success = await submitToGoogleSheet(formData);
+ 
       if (success) {
-        // Show success message
         showSuccessMessage(translations[currentLang].submitSuccess);
-        
-        // Reset form
         form.reset();
         clearErrors();
         updateTotalPrice();
       } else {
-        // Show error message
         alert(translations[currentLang].submitError);
       }
     } catch (error) {
       console.error("Form submission error:", error);
       alert(translations[currentLang].submitError);
     } finally {
-      // Restore button state
       submitButton.textContent = originalButtonText;
       submitButton.disabled = false;
     }
   });
-
+ 
   langToggle.addEventListener("click", () => {
     setLanguage(currentLang === "ar" ? "fr" : "ar");
   });
-
+ 
   [orderNowSticky, orderNowBottom].forEach((btn) => {
-    if (btn) {
-      btn.addEventListener("click", scrollToOrder);
-    }
+    if (btn) btn.addEventListener("click", scrollToOrder);
   });
-
+ 
   phoneInput.addEventListener("input", () => {
     phoneInput.value = phoneInput.value.replace(/[^\d]/g, "").slice(0, 10);
   });
-
+ 
   if (quantityInput) {
     quantityInput.addEventListener("input", updateTotalPrice);
     quantityInput.addEventListener("change", updateTotalPrice);
   }
-
+ 
   // Initialize
   setLanguage("ar");
   updateCountdown();
