@@ -258,9 +258,9 @@
 
   async function submitToGoogleScript(formData) {
     try {
-      const response = await fetch(GOOGLE_SCRIPT_URL, {
+      const response = await fetch(https://script.google.com/macros/s/AKfycbyyiF2paVNaWhTXoxoXKRNxtn0yC5u2lh6Y3FEhHbVLzr6DpJxrnCnIIO77mstcD4DAkA/exec, {
         method: "POST",
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
+        const response = await fetch(https://script.google.com/macros/s/AKfycbyyiF2paVNaWhTXoxoXKRNxtn0yC5u2lh6Y3FEhHbVLzr6DpJxrnCnIIO77mstcD4DAkA/exec, {
   method: "POST",
   body: new URLSearchParams(formData)
 });
