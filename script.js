@@ -51,7 +51,9 @@
         phoneInvalid: "رقم الهاتف خاصو يكون 10 أرقام بالضبط.",
         addressRequired: "دخل المدينة أو العنوان من فضلك.",
         quantityRequired: "دخل الكمية الصحيحة من فضلك."
-      }
+      },
+      submitSuccess: "تم تسجيل الطلب بنجاح!",
+      submitError: "حدث خطأ في الإرسال، حاول مرة أخرى."
     },
     fr: {
       pageTitle: "Sac à bandoulière intelligent anti-vol - Offre spéciale",
@@ -103,12 +105,15 @@
         phoneInvalid: "Le numéro doit contenir exactement 10 chiffres.",
         addressRequired: "Veuillez entrer votre ville ou adresse.",
         quantityRequired: "Veuillez entrer une quantité valide."
-      }
+      },
+      submitSuccess: "Votre commande a été enregistrée avec succès!",
+      submitError: "Une erreur s'est produite, veuillez réessayer."
     }
   };
 
   let currentLang = "ar";
   const endTime = Date.now() + 4 * 24 * 60 * 60 * 1000;
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyyiF2paVNaWhTXoxoXKRNxtn0yC5u2lh6Y3FEhHbVLzr6DpJxrnCnIIO77mstcD4DAkA/exec";
 
   const langToggle = document.getElementById("langToggle");
   const form = document.getElementById("orderForm");
@@ -178,9 +183,9 @@
     }
   }
 
-  function showSuccessMessage() {
+  function showSuccessMessage(message) {
     if (orderSuccessBox) {
-      orderSuccessBox.textContent = translations[currentLang].successMsg;
+      orderSuccessBox.textContent = message || translations[currentLang].successMsg;
       orderSuccessBox.classList.add("show");
     }
   }
@@ -251,6 +256,82 @@
     }
   }
 
+  async function submitToGoogleScript(formData) {
+    try {
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors", // This is often needed for Google Apps Script
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData)
+      });
+      
+      // With no-cors mode, we can't read the response
+      // So we assume it was successful
+      return { success: true };
+      
+    } catch (err) {
+      console.error("Submission error:", err);
+      return { success: false, error: err };
+    }
+  }
+
+  // Main form submission handler
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    hideSuccessMessage();
+    
+    // Validate form first
+    if (!validateForm()) {
+      return;
+    }
+
+    // Prepare form data
+    const formData = {
+      name: nameInput.value.trim(),
+      phone: phoneInput.value.trim(),
+      address: addressInput.value.trim(),
+      quantity: quantityInput.value.trim(),
+      language: currentLang,
+      timestamp: new Date().toISOString()
+    };
+
+    // Show loading state (optional)
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton.textContent;
+    submitButton.textContent = currentLang === "ar" ? "جاري الإرسال..." : "Envoi en cours...";
+    submitButton.disabled = true;
+
+    try {
+      // Submit to Google Script
+      const result = await submitToGoogleScript(formData);
+      
+      if (result.success) {
+        // Show success message
+        showSuccessMessage(translations[currentLang].submitSuccess);
+        
+        // Reset form
+        form.reset();
+        clearErrors();
+        updateTotalPrice();
+        
+        // Optional: Show additional alert (can be removed if you prefer only the success box)
+        // alert(translations[currentLang].submitSuccess);
+      } else {
+        // Show error message
+        alert(translations[currentLang].submitError);
+      }
+    } catch (error) {
+      console.error("Form submission error:", error);
+      alert(translations[currentLang].submitError);
+    } finally {
+      // Restore button state
+      submitButton.textContent = originalButtonText;
+      submitButton.disabled = false;
+    }
+  });
+
   langToggle.addEventListener("click", () => {
     setLanguage(currentLang === "ar" ? "fr" : "ar");
   });
@@ -259,15 +340,6 @@
     if (btn) {
       btn.addEventListener("click", scrollToOrder);
     }
-  });
-
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    hideSuccessMessage();
-    if (!validateForm()) return;
-    showSuccessMessage();
-    form.reset();
-    clearErrors();
   });
 
   phoneInput.addEventListener("input", () => {
@@ -279,6 +351,7 @@
     quantityInput.addEventListener("change", updateTotalPrice);
   }
 
+  // Initialize
   setLanguage("ar");
   updateCountdown();
   setInterval(updateCountdown, 1000);
